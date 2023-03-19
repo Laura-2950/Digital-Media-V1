@@ -80,19 +80,19 @@ group: provider
 
 **Users-service:**
 - Listar todos los usuarios que no pertenezcan al grupo admin desde Keycloak [GROUPS: ADMIN]:
-> localhost:8080/users/admin
+> http://localhost:8080/users/admin
 
 - Listar todos los usuarios por first name desde Keycloak [GROUPS: ADMIN]:
-> localhost:8080/users/keycloak/{firstName}
+> http://localhost:8080/users/keycloak/{firstName}
 
 - Listar todos los usuarios por username desde Keycloak [GROUPS: ADMIN o PROVIDER o CLIENT]:
-> localhost:8080/users/find/{username}
+> http://localhost:8080/users/find/{username}
 
 - Usuario por id desde Keycloak [GROUPS: ADMIN]:
-> localhost:8080/users/keycloak/id/{id}
+> http://localhost:8080/users/keycloak/id/{id}
 
 - Agregar el atributo nationality a un Usuarios por id en Keycloak [GROUPS: ADMIN]:
-> localhost:8080/users/keycloak/{id}/{nationality}
+> http://localhost:8080/users/keycloak/{id}/{nationality}
 
 ### Los puertos que se utilizan son:
 
