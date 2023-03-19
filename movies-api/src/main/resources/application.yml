@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: movies-service
+  cloud:
+    config:
+      fail-fast: true
+      discovery:
+        enabled: true
+        service-id: config-service
+  profiles:
+    active: dev
+  data:
+    mongodb:
+      authentication-database: admin
+      username: rootuser
+      password: rootpass
+      database: moviesdb
+      port: 27017
+      host: localhost
+  main:
+    allow-circular-references: true
+
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${keycloak.serverUrl}/realms/${keycloak.realm}
+        registration:
+          keycloak:
+            client-id: ${keycloak.clientId}
+            client-secret: ${keycloak.clientSecret}
+            scope: openid
+            redirect-uri: http://localhost:${server.port}/*
+keycloak:
+  realm: DigitalMedia
+  serverUrl: http://localhost:8082
+  clientId: microservicios
+  clientSecret: s81fjn1iBglMncYdD8qh5aubibNS2EAX
+
+
+app:
+  cors:
+    allowed-origins: http://localhost:3000
+
+management:
+  endpoints:
+    web:
+      exposure.include: beans, env, health, info, metrics, mappings
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    groups-order: DESC
+    disable-swagger-default-url: true
+server:
+  port: 8085
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

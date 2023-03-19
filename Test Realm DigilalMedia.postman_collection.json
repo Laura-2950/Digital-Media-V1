@@ -1,0 +1,932 @@
+{
+	"info": {
+		"_postman_id": "18aa3428-edec-4a88-a72a-d97ff6f3bc09",
+		"name": "Test Realm DigilalMedia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17974445"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "keycloak Configuration Endpoints",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData= JSON.parse(responseBody);\r",
+									"pm.environment.set(\"token_endpoint\", jsonData.token_endpoint);\r",
+									"pm.environment.set(\"userinfo_endpoint\", jsonData.userinfo_endpoint);\r",
+									"pm.environment.set(\"end_session_endpoint\", jsonData.end_session_endpoint);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/realms/DigitalMedia/.well-known/openid-configuration",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"realms",
+								"DigitalMedia",
+								".well-known",
+								"openid-configuration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Access Token (Password)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData= JSON.parse(responseBody);",
+									"pm.environment.set(\"access_token\", jsonData.access_token);",
+									"pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+									"pm.environment.set(\"id_token\", jsonData.id_token);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "microservicios",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{secret-microservicios}}",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:8080/*",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "provider",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "provider",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{token_endpoint}}",
+							"host": [
+								"{{token_endpoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authorization Endpoint (GET code)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/realms/DigitalMedia/protocol/openid-connect/auth?client_id=microservicios&response_type=code&redirect_uri=http://localhost:8080/*&scope=openid",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"realms",
+								"DigitalMedia",
+								"protocol",
+								"openid-connect",
+								"auth"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "microservicios"
+								},
+								{
+									"key": "response_type",
+									"value": "code"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:8080/*"
+								},
+								{
+									"key": "scope",
+									"value": "openid"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Access Token (Code)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Setear Tokens\", () => {",
+									"    const jsonData = pm.response.json();",
+									"   pm.collectionVariables.set(\"ACCESS_TOKEN\", jsonData.access_token);",
+									"   pm.collectionVariables.set(\"REFRESH_TOKEN\", jsonData.refresh_token);",
+									"   pm.collectionVariables.set(\"TOKEN_TYPE\", jsonData.token_type);",
+									"   pm.collectionVariables.set(\"ID_TOKEN\", jsonData.id_token);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "7a27a927-7e63-40d3-9019-1cb269ecd337.6142901a-ddda-495b-b921-af03c0b68d85.4c0df4a5-f7c3-4e86-96f0-fa77ec87fdb9",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "microservicios",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:8080/*",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{secret-microservicios}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{token_endpoint}}",
+							"host": [
+								"{{token_endpoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData= JSON.parse(responseBody);\r",
+									"pm.environment.set(\"access_token\", jsonData.access_token);\r",
+									"pm.environment.set(\"refresh_token\", jsonData.refresh_token);\r",
+									"pm.environment.set(\"id_token\", jsonData.id_token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{refresh_token}}",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "microservicios",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:8080/*",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{secret-microservicios}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{token_endpoint}}",
+							"host": [
+								"{{token_endpoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const user = response[0];\r",
+									"\r",
+									"pm.test(\"Get User Info\", ()=>{\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.email_verified).to.eql(false);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "microservicios",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{secret-microservicios}}",
+									"type": "text"
+								},
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{userinfo_endpoint}}",
+							"host": [
+								"{{userinfo_endpoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{end_session_endpoint}}?id_token={{id_token}}",
+							"host": [
+								"{{end_session_endpoint}}"
+							],
+							"query": [
+								{
+									"key": "id_token",
+									"value": "{{id_token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ms-bill",
+			"item": [
+				{
+					"name": "GET all bills [PROVIDER]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const bill = response[0];\r",
+									"\r",
+									"pm.test(\"Get bills\", ()=>{\r",
+									"    pm.expect(bill).to.be.an(\"object\");\r",
+									"    pm.expect(bill.customerBill).to.eql(\"admin\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8086/bills/all",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"bills",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST add new bill [PROVIDER]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Add new bills\", ()=>{\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.customerBill).to.eql(\"Laura\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "scope",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"billingDate\": \"2022-03-21\",\n        \"customerBill\": \"Laura\",\n        \"productBill\": \"courses/SpringBoot\",\n        \"totalPrice\": 1500.0\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8086/bills",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"bills"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET bill by customer [PROVIDER]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"const bill = response[0];\r",
+									"\r",
+									"pm.test(\"Bills by customer\", ()=>{\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.customerBill).to.eql(\"client\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8086/bills/findBy?customer=client",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"bills",
+								"findBy"
+							],
+							"query": [
+								{
+									"key": "customer",
+									"value": "client"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET bill by username + user details [CLIENT o PROVIDER]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Bills by username + user details\", ()=>{\r",
+									"    pm.expect(response).to.be.an(\"object\");\r",
+									"    pm.expect(response.user.email).to.eql(\"client@gmail.com\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8086/bills/detail/:username",
+							"host": [
+								"localhost"
+							],
+							"port": "8086",
+							"path": [
+								"bills",
+								"detail",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "client"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Keycloak Api Copy",
+			"item": [
+				{
+					"name": "Login client-admin in Keycloak",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData= JSON.parse(responseBody);\r",
+									"pm.environment.set(\"access_token_admin\", jsonData.access_token);\r",
+									"pm.environment.set(\"refresh_token_admin\", jsonData.refresh_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "admin-cli",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8082/realms/master/protocol/openid-connect/token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"realms",
+								"master",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users of realm DigitalMedia",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/admin/realms/:realmName/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"admin",
+								"realms",
+								":realmName",
+								"users"
+							],
+							"variable": [
+								{
+									"key": "realmName",
+									"value": "DigitalMedia"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/admin/realms/:realmName/users/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"admin",
+								"realms",
+								":realmName",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "realmName",
+									"value": "DigitalMedia"
+								},
+								{
+									"key": "id",
+									"value": "0b2d4aed-5bd6-4a64-8e0e-1457d1232d8e"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All realm groups",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/admin/realms/:realmName/groups",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"admin",
+								"realms",
+								":realmName",
+								"groups"
+							],
+							"variable": [
+								{
+									"key": "realmName",
+									"value": "DigitalMedia"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener usuarios de un grupo determinado",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/admin/realms/:realmName/groups/:idGroup/members",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"admin",
+								"realms",
+								":realmName",
+								"groups",
+								":idGroup",
+								"members"
+							],
+							"variable": [
+								{
+									"key": "realmName",
+									"value": "DigitalMedia"
+								},
+								{
+									"key": "idGroup",
+									"value": "0ea9d689-c2cf-45a7-b884-2c57243b025b"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Group by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token_admin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/admin/realms/:realmName/groups/:idGroup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"admin",
+								"realms",
+								":realmName",
+								"groups",
+								":idGroup"
+							],
+							"variable": [
+								{
+									"key": "realmName",
+									"value": "DigitalMedia"
+								},
+								{
+									"key": "idGroup",
+									"value": "b01cc38b-931d-4ac2-92c5-559e9e619bf3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "ACCESS_TOKEN",
+			"value": ""
+		},
+		{
+			"key": "REFRESH_TOKEN",
+			"value": ""
+		},
+		{
+			"key": "TOKEN_TYPE",
+			"value": ""
+		},
+		{
+			"key": "ID_TOKEN",
+			"value": ""
+		}
+	]
+}

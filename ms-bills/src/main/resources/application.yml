@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: ms-bill
+  cloud:
+    config:
+      fail-fast: true
+      discovery:
+        enabled: true
+        service-id: config-service
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:h2:mem:billsdb;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password: sa
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${keycloak.serverUrl}/realms/${keycloak.realm}
+        registration:
+          keycloak:
+            client-id: ${keycloak.clientId}
+            client-secret: ${keycloak.clientSecret}
+            scope: openid
+            redirect-uri: http://localhost:${server.port}/*
+keycloak:
+  realm: DigitalMedia
+  serverUrl: http://localhost:8082
+  clientId: microservicios
+  clientSecret: s81fjn1iBglMncYdD8qh5aubibNS2EAX
+
+server:
+  port: ${PORT:8086}
+
+eureka:
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    enabled: true
